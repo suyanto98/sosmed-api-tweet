@@ -1,10 +1,11 @@
 import { createUser } from "../../repositories/users/createUsers"
 import { findUserByEmailAndUsername } from "../../repositories/users/findUsersByEmailAndUsernam"
 import { Iuser } from "../../types/user.type"
+import { hashPassword } from "../../utils/bcrypt"
 
 export const registerUserAction = async (data: Iuser) => {
     try {
-        const {email, username} = data
+        const {email, username, password} = data
         const users = await findUserByEmailAndUsername(email, username)
 
         if(users.length) {
@@ -14,6 +15,8 @@ export const registerUserAction = async (data: Iuser) => {
             }
         } 
 
+        const hashedPassword = await hashPassword(password)
+        data.password = hashedPassword
         await createUser(data)
 
         return {
