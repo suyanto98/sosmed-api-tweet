@@ -1,5 +1,7 @@
 import { findUserByEmail } from "../../repositories/users/findUserByEmail";
 import { findUserByUsername } from "../../repositories/users/findUserByusername";
+import { comparePasswords } from "../../utils/bcrypt";
+import { excludeFields } from "../../utils/excludeFields";
 
 export const LoginUserAction = async (usernameOrEmail: string, password: string) => {
     try {
@@ -25,17 +27,21 @@ export const LoginUserAction = async (usernameOrEmail: string, password: string)
             }
         }
 
-        if(user.password !== password) {
+        const isPasswordValid = await comparePasswords(password, user.password)
+
+        if(!isPasswordValid) {
             return {
                 status: 400,
                 message: "Invalid credentials"
             }
         }
 
+        const dataWithoutPassword = excludeFields(user, ["password"]);
+
         return {
             status: 200,
             message: "login success",
-            data: user
+            data: dataWithoutPassword
         }
 
     } catch (error) {
