@@ -2,6 +2,7 @@ import { findUserByEmail } from "../../repositories/users/findUserByEmail";
 import { findUserByUsername } from "../../repositories/users/findUserByusername";
 import { comparePasswords } from "../../utils/bcrypt";
 import { excludeFields } from "../../utils/excludeFields";
+import { createToken } from "../../utils/jwt";
 
 export const LoginUserAction = async (usernameOrEmail: string, password: string) => {
     try {
@@ -38,10 +39,13 @@ export const LoginUserAction = async (usernameOrEmail: string, password: string)
 
         const dataWithoutPassword = excludeFields(user, ["password"]);
 
+        const token = createToken({id: user.id})
+
         return {
             status: 200,
             message: "login success",
-            data: dataWithoutPassword
+            data: dataWithoutPassword,
+            token
         }
 
     } catch (error) {
