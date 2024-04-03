@@ -1,21 +1,13 @@
 import { findUserById } from "../../repositories/users/findUserById";
 import { excludeFields } from "../../utils/excludeFields";
 
-export const keeploginAction = async (id: number) => {
+export const profileUserAction = async (userId: number) => {
   try {
-    const user = await findUserById(id);
-    if (!user) {
-      return {
-        status: 404,
-        message: `User with id: ${id} not found`,
-      };
-    }
-
+    const user = await findUserById(userId);
     const dataWithoutPassword = excludeFields(user, ["password"]);
-
     return {
       status: 200,
-      message: "success",
+      message: "find user success",
       data: dataWithoutPassword,
     };
   } catch (error) {

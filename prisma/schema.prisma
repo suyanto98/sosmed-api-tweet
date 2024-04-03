@@ -11,11 +11,60 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  username  String   @unique
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
+  username  String     @unique
   password  String
-  isDeleted Boolean  @default(false)
+  bio       String?
+  avatar    String?
+  cover     String?
+  isDeleted Boolean    @default(false)
+  createdAt DateTime   @default(now())
+  updateAt  DateTime   @updatedAt
+  Tweet     Tweet[]
+  Like      Like[]
+  Comment   Comment[]
+  followers Follower[] @relation("follower")
+  following Follower[] @relation("following")
+}
+
+model Tweet {
+  id        Int       @id @default(autoincrement())
+  tweet     String
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Like      Like[]
+  Comment   Comment[]
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  tweetId   Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tweet     Tweet    @relation(fields: [tweetId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  comment   String
   createdAt DateTime @default(now())
   updateAt  DateTime @updatedAt
+  userId    Int
+  tweetId   Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tweet     Tweet    @relation(fields: [tweetId], references: [id], onDelete: Cascade)
+}
+
+model Follower {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updateAt    DateTime @updatedAt
+  followerId  Int
+  followingId Int
+  follower    User     @relation("follower", fields: [followerId], references: [id])
+  following   User     @relation("following", fields: [followingId], references: [id])
 }
